@@ -39,6 +39,7 @@ import com.naman14.timber.activities.SearchActivity;
 import com.naman14.timber.activities.SettingsActivity;
 import com.naman14.timber.fragments.AlbumDetailFragment;
 import com.naman14.timber.fragments.ArtistDetailFragment;
+import com.naman14.timber.nowplaying.BaseNowplayingFragment;
 import com.naman14.timber.nowplaying.Timber1;
 import com.naman14.timber.nowplaying.Timber2;
 import com.naman14.timber.nowplaying.Timber3;
@@ -105,9 +106,8 @@ public class NavigationUtils {
     public static void minimize(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
-            builder.setAspectRatio(new Rational(1, 1));
-            boolean result = activity.enterPictureInPictureMode(builder.build());
-            Toast.makeText(activity, "enter pip mode " + result, Toast.LENGTH_SHORT).show();
+            builder.setAspectRatio(new Rational(2, 1));
+            activity.enterPictureInPictureMode(builder.build());
         }
     }
 
@@ -172,7 +172,7 @@ public class NavigationUtils {
         return intent;
     }
 
-    public static Fragment getFragmentForNowplayingID(String fragmentID) {
+    public static BaseNowplayingFragment getFragmentForNowplayingID(String fragmentID) {
         switch (fragmentID) {
             case Constants.TIMBER1:
                 return new Timber1();

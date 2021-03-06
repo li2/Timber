@@ -20,20 +20,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.databinding.DataBindingUtil;
+
 import com.naman14.timber.MusicPlayer;
 import com.naman14.timber.MusicService;
 import com.naman14.timber.R;
+import com.naman14.timber.databinding.FragmentTimber1Binding;
 import com.naman14.timber.utils.TimberUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 public class Timber1 extends BaseNowplayingFragment {
 
+    private FragmentTimber1Binding binding;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_timber1, container, false);
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_timber1, container, false);
+        View rootView = binding.getRoot();
         setMusicStateListener();
         setSongDetails(rootView);
         initGestures(rootView.findViewById(R.id.album_art));
@@ -69,4 +73,9 @@ public class Timber1 extends BaseNowplayingFragment {
         }
     }
 
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        binding.setIsInPipMode(isInPictureInPictureMode);
+    }
 }
