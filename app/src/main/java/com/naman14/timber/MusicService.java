@@ -112,6 +112,8 @@ public class MusicService extends Service {
     public static final String PAUSE_ACTION = "com.naman14.timber.pause";
     public static final String STOP_ACTION = "com.naman14.timber.stop";
     public static final String PREVIOUS_ACTION = "com.naman14.timber.previous";
+    public static final String FAST_FORAWRD_ACTION = "com.naman14.timber.fastforward";
+    public static final String FAST_REWIND_ACTION = "com.naman14.timber.fastrewind";
     public static final String PREVIOUS_FORCE_ACTION = "com.naman14.timber.previous.force";
     public static final String NEXT_ACTION = "fcom.naman14.timber.next";
     public static final String REPEAT_ACTION = "com.naman14.timber.repeat";
@@ -139,7 +141,7 @@ public class MusicService extends Service {
     public static final int REPEAT_ALL = 2;
     public static final int MAX_HISTORY_SIZE = 1000;
     private static final String TAG = "MusicPlaybackService";
-    private static final boolean D = false;
+    private static final boolean D = true;
     private static final String SHUTDOWN = "com.naman14.timber.shutdown";
     private static final int IDCOLIDX = 0;
     private static final int TRACK_ENDED = 1;
@@ -153,7 +155,16 @@ public class MusicService extends Service {
     private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000;
     /** The amount of time we are stepping forward or backward for fast-forward and fast-rewind.  */
     public final static int FAST_FORWARD_REWIND_INTERVAL_5S = 5000; // ms
+    public final static int FAST_FORWARD_REWIND_INTERVAL_10S = 10000; // ms
     public final static int FAST_FORWARD_REWIND_INTERVAL_15S = 15000; // ms
+
+    private final static long MEDIAL_SESSION_ACTIONS_ALL = PlaybackStateCompat.ACTION_PLAY
+            | PlaybackStateCompat.ACTION_PAUSE
+            | PlaybackStateCompat.ACTION_PLAY_PAUSE
+            | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            | PlaybackStateCompat.ACTION_FAST_FORWARD
+            | PlaybackStateCompat.ACTION_REWIND;
 
     private static final String[] PROJECTION = new String[]{
             "audio._id AS _id", MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
@@ -336,6 +347,8 @@ public class MusicService extends Service {
         filter.addAction(NEXT_ACTION);
         filter.addAction(PREVIOUS_ACTION);
         filter.addAction(PREVIOUS_FORCE_ACTION);
+        filter.addAction(FAST_FORAWRD_ACTION);
+        filter.addAction(FAST_REWIND_ACTION);
         filter.addAction(REPEAT_ACTION);
         filter.addAction(SHUFFLE_ACTION);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -418,14 +431,12 @@ public class MusicService extends Service {
 
             @Override
             public void onSkipToNext() {
-//                gotoNext(true);
-                seek(position() + FAST_FORWARD_REWIND_INTERVAL_15S);
+                gotoNext(true);
             }
 
             @Override
             public void onSkipToPrevious() {
-//                prev(false);
-                seek(position() - FAST_FORWARD_REWIND_INTERVAL_15S);
+                prev(false);
             }
 
             @Override
@@ -438,12 +449,12 @@ public class MusicService extends Service {
 
             @Override
             public void onFastForward() {
-                seek(position() + FAST_FORWARD_REWIND_INTERVAL_15S);
+                fastForward(FAST_FORWARD_REWIND_INTERVAL_15S);
             }
 
             @Override
             public void onRewind() {
-                seek(position() - FAST_FORWARD_REWIND_INTERVAL_15S);
+                fastRewind(FAST_FORWARD_REWIND_INTERVAL_15S);
             }
         });
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
@@ -581,6 +592,10 @@ public class MusicService extends Service {
             mPausedByTransientLossOfFocus = false;
             seek(0);
             releaseServiceUiAndStop();
+        } else if (FAST_FORAWRD_ACTION.equals(action)) {
+            fastForward(FAST_FORWARD_REWIND_INTERVAL_10S);
+        } else if (FAST_REWIND_ACTION.equals(action)) {
+            fastRewind(FAST_FORWARD_REWIND_INTERVAL_10S);
         } else if (REPEAT_ACTION.equals(action)) {
             cycleRepeat();
         } else if (SHUFFLE_ACTION.equals(action)) {
@@ -1216,8 +1231,9 @@ public class MusicService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mSession.setPlaybackState(new PlaybackStateCompat.Builder()
                         .setState(playState, position(), 1.0f)
-                        .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                        .setActions(MEDIAL_SESSION_ACTIONS_ALL)
+//                        .addCustomAction(new PlaybackStateCompat.CustomAction.Builder(FAST_FORAWRD_ACTION, "Fast Forward", R.drawable.cast_ic_notification_forward).build())
+//                        .addCustomAction(new PlaybackStateCompat.CustomAction.Builder(FAST_REWIND_ACTION, "Fast Rewind", R.drawable.cast_ic_notification_rewind).build())
                         .build());
             }
         } else if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
@@ -1248,8 +1264,7 @@ public class MusicService extends Service {
 
                 mSession.setPlaybackState(new PlaybackStateCompat.Builder()
                         .setState(playState, position(), 1.0f)
-                        .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                        .setActions(MEDIAL_SESSION_ACTIONS_ALL)
                         .build());
             }
         }
@@ -1288,21 +1303,37 @@ public class MusicService extends Service {
             mNotificationPostTime = System.currentTimeMillis();
         }
 
+//        androidx.core.app.NotificationCompat.BubbleMetadata bubbleMetadata = new androidx.core.app.NotificationCompat.BubbleMetadata.Builder()
+//                .setIntent(clickIntent)
+//                .setIcon(IconCompat.createWithResource(this, R.drawable.above_shadow))
+//                .setDesiredHeight(600)
+//                .setAutoExpandBubble(true)
+//                .build();
+
+//        Person user = new Person.Builder()
+//                .setIcon(IconCompat.createWithResource(this, R.drawable.above_shadow))
+//                .setName("Timber")
+//                .build();
+//        androidx.core.app.NotificationCompat.MessagingStyle messagingStyle = new androidx.core.app.NotificationCompat.MessagingStyle(user);
+
         androidx.core.app.NotificationCompat.Builder builder = new androidx.core.app.NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setBubbleMetadata(bubbleMetadata)
+//                .addPerson(user)
+//                .setStyle(messagingStyle)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setLargeIcon(artwork)
                 .setContentIntent(clickIntent)
                 .setContentTitle(getTrackName())
                 .setContentText(text)
                 .setWhen(mNotificationPostTime)
-                .addAction(R.drawable.ic_skip_previous_white_36dp,
+                .addAction(R.drawable.cast_ic_notification_rewind10,
                         "",
-                        retrievePlaybackAction(PREVIOUS_ACTION))
+                        retrievePlaybackAction(FAST_REWIND_ACTION))
                 .addAction(playButtonResId, "",
                         retrievePlaybackAction(TOGGLEPAUSE_ACTION))
-                .addAction(R.drawable.ic_skip_next_white_36dp,
+                .addAction(R.drawable.cast_ic_notification_forward10,
                         "",
-                        retrievePlaybackAction(NEXT_ACTION));
+                        retrievePlaybackAction(FAST_FORAWRD_ACTION));
 
         if (TimberUtils.isJellyBeanMR1()) {
             builder.setShowWhen(false);
@@ -1857,6 +1888,14 @@ public class MusicService extends Service {
             return result;
         }
         return -1;
+    }
+
+    public void fastForward(long interval) {
+        seek(position() + interval);
+    }
+
+    public void fastRewind(long interval) {
+        seek(position() - interval);
     }
 
     public void seekRelative(long deltaInMs) {
