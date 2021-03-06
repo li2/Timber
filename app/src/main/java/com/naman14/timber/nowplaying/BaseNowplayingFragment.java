@@ -332,7 +332,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             ab.setTitle("");
         }
         if (mPlayPause != null && getActivity() != null) {
-            mPlayPause.setColor(ContextCompat.getColor(getContext(), android.R.color.white));
+            mPlayPause.setColor(ContextCompat.getColor(getContext(), R.color.fastForwardRewind));
         }
 
         if (playPauseFloating != null) {
