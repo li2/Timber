@@ -17,16 +17,19 @@ package com.naman14.timber.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.PictureInPictureParams;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.os.Build;
 import android.util.Pair;
+import android.util.Rational;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.naman14.timber.R;
 import com.naman14.timber.activities.MainActivity;
@@ -97,6 +100,15 @@ public class NavigationUtils {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(Constants.NAVIGATE_LYRICS);
         context.startActivity(intent);
+    }
+
+    public static void minimize(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
+            builder.setAspectRatio(new Rational(1, 1));
+            boolean result = activity.enterPictureInPictureMode(builder.build());
+            Toast.makeText(activity, "enter pip mode " + result, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void navigateToNowplaying(Activity context, boolean withAnimations) {
