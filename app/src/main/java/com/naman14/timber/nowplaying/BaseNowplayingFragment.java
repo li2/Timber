@@ -72,8 +72,8 @@ import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.security.InvalidParameterException;
 
-import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_15S;
-import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_5S;
+import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_10S;
+import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_30S;
 
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
@@ -401,7 +401,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_5S);
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_10S);
                 }
             });
         }
@@ -410,7 +410,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             next2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_15S);
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_30S);
                 }
             });
         }
@@ -419,7 +419,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             previous.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_5S);
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_10S);
                 }
             });
         }
@@ -428,7 +428,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             previous2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_15S);
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_30S);
                 }
             });
         }

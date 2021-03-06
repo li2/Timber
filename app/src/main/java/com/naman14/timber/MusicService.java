@@ -154,9 +154,8 @@ public class MusicService extends Service {
     private static final int IDLE_DELAY = 5 * 60 * 1000;
     private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000;
     /** The amount of time we are stepping forward or backward for fast-forward and fast-rewind.  */
-    public final static int FAST_FORWARD_REWIND_INTERVAL_5S = 5000; // ms
     public final static int FAST_FORWARD_REWIND_INTERVAL_10S = 10000; // ms
-    public final static int FAST_FORWARD_REWIND_INTERVAL_15S = 15000; // ms
+    public final static int FAST_FORWARD_REWIND_INTERVAL_30S = 30000; // ms
 
     private final static long MEDIAL_SESSION_ACTIONS_ALL = PlaybackStateCompat.ACTION_PLAY
             | PlaybackStateCompat.ACTION_PAUSE
@@ -449,12 +448,12 @@ public class MusicService extends Service {
 
             @Override
             public void onFastForward() {
-                fastForward(FAST_FORWARD_REWIND_INTERVAL_15S);
+                fastForward(FAST_FORWARD_REWIND_INTERVAL_30S);
             }
 
             @Override
             public void onRewind() {
-                fastRewind(FAST_FORWARD_REWIND_INTERVAL_15S);
+                fastRewind(FAST_FORWARD_REWIND_INTERVAL_30S);
             }
         });
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
