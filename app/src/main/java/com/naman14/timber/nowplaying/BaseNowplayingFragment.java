@@ -68,16 +68,16 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
-import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.security.InvalidParameterException;
 
 import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_10S;
 import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_30S;
+import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_5S;
 
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
-    private MaterialIconView previous, previous2, next, next2;
+    private ImageView previous, previous2, previous3, next, next2, next3;
     private PlayPauseButton mPlayPause;
     private PlayPauseDrawable playPauseDrawable = new PlayPauseDrawable();
     private FloatingActionButton playPauseFloating;
@@ -116,7 +116,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     elapsedtime.setText(TimberUtils.makeShortTimeString(getActivity(), position / 1000));
             }
             overflowcounter--;
-            int delay = 250; //not sure why this delay was so high before
+            int delay = 5000; //not sure why this delay was so high before
             if (overflowcounter < 0 && !fragmentPaused) {
                     overflowcounter++;
                     mProgress.postDelayed(mUpdateProgress, delay); //delay
@@ -292,10 +292,12 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         albumart = (ImageView) view.findViewById(R.id.album_art);
         shuffle = (ImageView) view.findViewById(R.id.shuffle);
         repeat = (ImageView) view.findViewById(R.id.repeat);
-        next = (MaterialIconView) view.findViewById(R.id.next);
-        next2 = (MaterialIconView) view.findViewById(R.id.next2);
-        previous = (MaterialIconView) view.findViewById(R.id.previous);
-        previous2 = (MaterialIconView) view.findViewById(R.id.previous2);
+        next = view.findViewById(R.id.next);
+        next2 = view.findViewById(R.id.next2);
+        next3 = view.findViewById(R.id.next3);
+        previous = view.findViewById(R.id.previous);
+        previous2 = view.findViewById(R.id.previous2);
+        previous3 = view.findViewById(R.id.previous3);
         mPlayPause = (PlayPauseButton) view.findViewById(R.id.playpause);
         playPauseFloating = (FloatingActionButton) view.findViewById(R.id.playpausefloating);
         playPauseWrapper = view.findViewById(R.id.playpausewrapper);
@@ -401,13 +403,22 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_10S);
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_5S);
                 }
             });
         }
 
         if (next2 != null) {
             next2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_10S);
+                }
+            });
+        }
+
+        if (next3 != null) {
+            next3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_30S);
@@ -419,13 +430,22 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             previous.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_10S);
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_5S);
                 }
             });
         }
 
         if (previous2 != null) {
             previous2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_10S);
+                }
+            });
+        }
+
+        if (previous3 != null) {
+            previous3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_30S);
@@ -454,6 +474,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 } else {
                     MusicPlayer.fastRewind(interval);
                 }
+                if (mProgress != null)
+                    mProgress.postDelayed(mUpdateProgress, 10);
+
                 notifyPlayingDrawableChange();
             }
         }, 200);
