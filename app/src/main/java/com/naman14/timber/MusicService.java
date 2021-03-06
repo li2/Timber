@@ -430,12 +430,14 @@ public class MusicService extends Service {
 
             @Override
             public void onSkipToNext() {
-                gotoNext(true);
+//                gotoNext(true);
+                fastForward(FAST_FORWARD_REWIND_INTERVAL_10S);
             }
 
             @Override
             public void onSkipToPrevious() {
-                prev(false);
+//                prev(false);
+                fastForward(FAST_FORWARD_REWIND_INTERVAL_10S);
             }
 
             @Override
