@@ -58,15 +58,15 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.AudioColumns;
-import androidx.core.app.NotificationManagerCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-
-import androidx.media.app.NotificationCompat;
-import androidx.palette.graphics.Palette;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.core.app.NotificationManagerCompat;
+import androidx.media.app.NotificationCompat;
+import androidx.palette.graphics.Palette;
 
 import com.naman14.timber.helpers.MediaButtonIntentReceiver;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
@@ -151,6 +151,10 @@ public class MusicService extends Service {
     private static final int FADEUP = 7;
     private static final int IDLE_DELAY = 5 * 60 * 1000;
     private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000;
+    /** The amount of time we are stepping forward or backward for fast-forward and fast-rewind.  */
+    public final static int FAST_FORWARD_REWIND_INTERVAL_5S = 5000; // ms
+    public final static int FAST_FORWARD_REWIND_INTERVAL_15S = 15000; // ms
+
     private static final String[] PROJECTION = new String[]{
             "audio._id AS _id", MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
@@ -414,12 +418,14 @@ public class MusicService extends Service {
 
             @Override
             public void onSkipToNext() {
-                gotoNext(true);
+//                gotoNext(true);
+                seek(position() + FAST_FORWARD_REWIND_INTERVAL_15S);
             }
 
             @Override
             public void onSkipToPrevious() {
-                prev(false);
+//                prev(false);
+                seek(position() - FAST_FORWARD_REWIND_INTERVAL_15S);
             }
 
             @Override
@@ -428,6 +434,16 @@ public class MusicService extends Service {
                 mPausedByTransientLossOfFocus = false;
                 seek(0);
                 releaseServiceUiAndStop();
+            }
+
+            @Override
+            public void onFastForward() {
+                seek(position() + FAST_FORWARD_REWIND_INTERVAL_15S);
+            }
+
+            @Override
+            public void onRewind() {
+                seek(position() - FAST_FORWARD_REWIND_INTERVAL_15S);
             }
         });
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS

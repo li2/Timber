@@ -613,6 +613,20 @@ public class MusicPlayer {
         }
     }
 
+    /**
+     * Fast-forward the video.
+     */
+    public static void fastForward(long interval) {
+        seek(position() + interval);
+    }
+
+    /**
+     * Fast-rewind the video.
+     */
+    public static void fastRewind(long interval) {
+        seek(position() - interval);
+    }
+
     public static void seekRelative(final long deltaInMs) {
         if (mService != null) {
             try {

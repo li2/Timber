@@ -72,9 +72,12 @@ import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.security.InvalidParameterException;
 
+import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_15S;
+import static com.naman14.timber.MusicService.FAST_FORWARD_REWIND_INTERVAL_5S;
+
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
-    private MaterialIconView previous, next;
+    private MaterialIconView previous, previous2, next, next2;
     private PlayPauseButton mPlayPause;
     private PlayPauseDrawable playPauseDrawable = new PlayPauseDrawable();
     private FloatingActionButton playPauseFloating;
@@ -290,7 +293,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         shuffle = (ImageView) view.findViewById(R.id.shuffle);
         repeat = (ImageView) view.findViewById(R.id.repeat);
         next = (MaterialIconView) view.findViewById(R.id.next);
+        next2 = (MaterialIconView) view.findViewById(R.id.next2);
         previous = (MaterialIconView) view.findViewById(R.id.previous);
+        previous2 = (MaterialIconView) view.findViewById(R.id.previous2);
         mPlayPause = (PlayPauseButton) view.findViewById(R.id.playpause);
         playPauseFloating = (FloatingActionButton) view.findViewById(R.id.playpausefloating);
         playPauseWrapper = view.findViewById(R.id.playpausewrapper);
@@ -396,31 +401,34 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            MusicPlayer.next();
-                            notifyPlayingDrawableChange();
-                        }
-                    }, 200);
-
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_5S);
                 }
             });
         }
+
+        if (next2 != null) {
+            next2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fastForwardRewind(true, FAST_FORWARD_REWIND_INTERVAL_15S);
+                }
+            });
+        }
+
         if (previous != null) {
             previous.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            MusicPlayer.previous(getActivity(), false);
-                            notifyPlayingDrawableChange();
-                        }
-                    }, 200);
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_5S);
+                }
+            });
+        }
 
+        if (previous2 != null) {
+            previous2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fastForwardRewind(false, FAST_FORWARD_REWIND_INTERVAL_15S);
                 }
             });
         }
@@ -435,6 +443,22 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         updateRepeatState();
 
     }
+
+    private void fastForwardRewind(final boolean isForward, final long interval) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isForward) {
+                    MusicPlayer.fastForward(interval);
+                } else {
+                    MusicPlayer.fastRewind(interval);
+                }
+                notifyPlayingDrawableChange();
+            }
+        }, 200);
+    }
+
 
     public void updateShuffleState() {
         if (shuffle != null && getActivity() != null) {

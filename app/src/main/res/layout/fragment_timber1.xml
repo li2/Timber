@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -20,7 +21,7 @@
             <FrameLayout
                 android:id="@+id/headerView"
                 android:layout_width="match_parent"
-                app:layout_heightPercent="55%">
+                app:layout_heightPercent="50%">
 
                 <ImageView
                     android:id="@+id/album_art"
@@ -84,7 +85,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#ffffff"
-                        app:isVisible="@{!isInPipMode}"/>
+                        app:isVisible="@{!isInPipMode}"
+                        tools:text="album"/>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -97,7 +99,7 @@
                             android:layout_alignParentLeft="true"
                             android:paddingLeft="25dp"
                             android:textColor="#ffffff"
-                            app:isVisible="@{isInPipMode}"/>
+                            tools:text="00:21"/>
 
                         <TextView
                             android:id="@+id/song_duration"
@@ -105,7 +107,8 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:paddingRight="25dp"
-                            android:textColor="#ffffff" />
+                            android:textColor="#ffffff"
+                            tools:text="05:21"/>
 
                     </RelativeLayout>
 
@@ -118,6 +121,19 @@
                         android:paddingTop="20dp">
 
                         <net.steamcrafted.materialiconlib.MaterialIconView
+                            android:id="@+id/previous2"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="0.7"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:paddingLeft="50dp"
+                            android:scaleType="center"
+                            app:materialIcon="rewind"
+                            app:materialIconColor="#fff"
+                            app:materialIconSize="35dp"
+                            tools:src="@android:drawable/ic_media_previous"/>
+
+                        <net.steamcrafted.materialiconlib.MaterialIconView
                             android:id="@+id/previous"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
@@ -125,9 +141,10 @@
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:paddingLeft="50dp"
                             android:scaleType="center"
-                            app:materialIcon="skip_previous"
+                            app:materialIcon="rewind"
                             app:materialIconColor="#fff"
-                            app:materialIconSize="35dp" />
+                            app:materialIconSize="35dp"
+                            tools:src="@android:drawable/ic_media_previous"/>
 
                         <FrameLayout
                             android:layout_width="50dp"
@@ -159,9 +176,24 @@
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:paddingRight="50dp"
                             android:scaleType="center"
-                            app:materialIcon="skip_next"
+                            app:materialIcon="fast_forward"
                             app:materialIconColor="#fff"
-                            app:materialIconSize="35dp" />
+                            app:materialIconSize="35dp"
+                            tools:src="@android:drawable/ic_media_next"/>
+
+                        <net.steamcrafted.materialiconlib.MaterialIconView
+                            android:id="@+id/next2"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="0.7"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:paddingRight="50dp"
+                            android:scaleType="center"
+                            app:materialIcon="fast_forward"
+                            app:materialIconColor="#fff"
+                            app:materialIconSize="35dp"
+                            tools:src="@android:drawable/ic_media_next"/>
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -201,7 +233,7 @@
             android:tag="bg_tint_accent_color"
             app:layout_anchor="@id/headerView"
             app:layout_anchorGravity="bottom|right|end"
-            app:isVisible="@{!isInPipMode}"/>
+            android:visibility="gone"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
