@@ -116,7 +116,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     elapsedtime.setText(TimberUtils.makeShortTimeString(getActivity(), position / 1000));
             }
             overflowcounter--;
-            int delay = 5000; //not sure why this delay was so high before
+            int delay = 10000; //not sure why this delay was so high before
             if (overflowcounter < 0 && !fragmentPaused) {
                     overflowcounter++;
                     mProgress.postDelayed(mUpdateProgress, delay); //delay
@@ -473,6 +473,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     MusicPlayer.fastForward(interval);
                 } else {
                     MusicPlayer.fastRewind(interval);
+                }
+                if (mUpdateProgress != null) {
+                    mProgress.removeCallbacks(mUpdateProgress);
                 }
                 if (mProgress != null)
                     mProgress.postDelayed(mUpdateProgress, 10);
